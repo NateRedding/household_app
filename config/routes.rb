@@ -1,4 +1,10 @@
 HouseholdApp::Application.routes.draw do
+
+  root :to => 'pages#home'
+
+  resources(:recipe_categories)
+  resources(:recipes)
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
