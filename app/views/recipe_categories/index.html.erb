@@ -1,4 +1,7 @@
-<h1>Recipe Categories <%= link_to('+', new_recipe_category_path, :class => 'LinkButton Round') %></h1>
+<h1>Recipe Categories</h1>
+<div class="Actions">
+  <%= link_to('add', new_recipe_category_path, :class => 'LinkButton Round') %>
+</div>
 <ul class="RecipeCategoryList">
   <%= render(@categories) %>
 </ul>

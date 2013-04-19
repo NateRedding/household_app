@@ -1,4 +1,11 @@
-<h1><%= @category.name %> <%= link_to('+', new_recipe_path, :class => 'LinkButton Round') %></h1>
+<h1><%= @category.name %></h1>
+<div class="Actions">
+  <%= link_to('add', new_recipe_path, :class => 'LinkButton Round') %>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <%= link_to('rename', edit_recipe_category_path(@category), :class => 'LinkButton Round') %>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <%= link_to('delete', @category, :method => :delete, :confirm => 'Are you sure? This will delete ALL recipes in this category.', :title => "Delete #{@category.name}") unless params[:admin].nil?%>
+</div>
 <%= will_paginate(@recipes) %>
 <ul class="RecipeList">
   <%= render(:collection => @recipes, :partial => 'recipe_categories/recipe') %>

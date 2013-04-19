@@ -7,6 +7,7 @@ describe RecipeCategoriesController do
     @base_title = 'Recipes - '
     @index_title = @base_title + 'Categories'
     @new_title = @base_title + 'New Category'
+    @edit_title = @base_title + 'Rename Category'
   end
 
   describe "GET 'index'" do
@@ -32,6 +33,23 @@ describe RecipeCategoriesController do
       get(:index)
       response.should have_selector('a', :href => new_recipe_category_path)
     end
+
+    it "should not have a link to delete each of the recipe categories" do
+      get(:index)
+      RecipeCategory.all.each do |category|
+        response.should_not have_selector('a', :href => recipe_category_path(category), :'data-method' => 'delete')
+      end
+    end
+
+    describe "admin mode" do
+      it "should have a link to delete each of the recipe categories" do
+        get(:index, :admin => true)
+        RecipeCategory.all.each do |category|
+          response.should have_selector('a', :href => recipe_category_path(category), :'data-method' => 'delete')
+        end
+      end
+    end
+
   end
 
   describe "GET 'show'" do
@@ -58,6 +76,39 @@ describe RecipeCategoriesController do
       get(:show, :id => @category)
       response.should have_selector('a', :href => new_recipe_path)
     end
+
+    it "should have a link to rename the category" do
+      get(:show, :id => @category)
+      response.should have_selector('a', :href => edit_recipe_category_path(@category))
+    end
+
+    it "should not have a link to delete the category" do
+      get(:show, :id => @category)
+      response.should_not have_selector('a', :href => recipe_category_path(@category), :'data-method' => 'delete')
+    end
+
+    it "should not have a link to delete each of the recipes" do
+      get(:show, :id => @category)
+      @category.recipes.each do |recipe|
+        response.should_not have_selector('a', :href => recipe_path(recipe), :'data-method' => 'delete')
+      end
+    end
+
+    describe "admin mode" do
+
+      it "should have a link to delete the category" do
+        get(:show, :id => @category, :admin => true)
+        response.should have_selector('a', :href => recipe_category_path(@category), :'data-method' => 'delete')
+      end
+
+      it "should have a link to delete each of the recipes" do
+        get(:show, :id => @category, :admin => true)
+        @category.recipes.each do |recipe|
+          response.should have_selector('a', :href => recipe_path(recipe), :'data-method' => 'delete')
+        end
+      end
+    end
+
   end
 
   describe "GET 'new'" do
@@ -72,7 +123,7 @@ describe RecipeCategoriesController do
       response.should have_selector('form#new_recipe_category') do |content|
         content.should have_selector('label', :content => 'Name')
         content.should have_selector('input', :name => 'recipe_category[name]')
-        content.should have_selector('input', :type => 'submit', :value => 'Create')
+        content.should have_selector('input', :type => 'submit', :value => 'Save')
       end
     end
   end
@@ -107,7 +158,84 @@ describe RecipeCategoriesController do
         response.should have_selector('title', :content => @new_title)
         response.should have_selector('div#error_explanation')
       end
+    end
+  end
 
+  describe "GET 'edit'" do
+    before(:each) do
+      @category = RecipeCategory.create(:name => 'Appetizers')
+    end
+
+    it "should have the right title" do
+      get(:edit, :id => @category)
+      response.should be_success
+      response.should have_selector('title', :content => @edit_title)
+    end
+
+    it "should have a recipe category form" do
+      get(:edit, :id => @category)
+      response.should have_selector("form#edit_recipe_category_#{@category.id}") do |content|
+        content.should have_selector('label', :content => 'Name')
+        content.should have_selector('input', :name => 'recipe_category[name]')
+        content.should have_selector('input', :type => 'submit', :value => 'Save')
+      end
+    end
+  end
+
+  describe "PUT 'update'" do
+    before(:each) do
+      @category = RecipeCategory.create(:name => 'Appetizers')
+    end
+
+    describe "success" do
+
+      before(:each) do
+        @attr = { :name => "Starters" }
+      end
+
+      it "should save the category" do
+        put(:update, :id => @category, :recipe_category => @attr)
+        category = assigns(:category)
+        @category.reload
+        @category.name.should == category.name
+      end
+
+      it "should redirect to the show page" do
+        put(:update, :id => @category, :recipe_category => @attr)
+        flash[:success].should =~ /updated/i
+        response.should redirect_to(recipe_category_path(@category))
+      end
+    end
+
+    describe "failure" do
+      before(:each) do
+        @attr = { name: '' }
+      end
+
+      it "should render the 'edit' page with error messages" do
+        put(:update, :id => @category, :recipe_category => @attr)
+        response.should render_template(:edit)
+        response.should have_selector('title', :content => @edit_title)
+        response.should have_selector('div#error_explanation')
+      end
+    end
+  end
+
+  describe "DELETE 'destroy'" do
+    before(:each) do
+      @category = RecipeCategory.create(:name => 'Appetizers')
+    end
+
+    it "should destroy the category" do
+      lambda do
+        delete(:destroy, :id => @category)
+      end.should change(RecipeCategory, :count).by(-1)
+    end
+
+    it "should redirect to the category index" do
+      delete(:destroy, :id => @category)
+      flash[:success].should =~ /deleted/i
+      response.should redirect_to(recipe_categories_path)
     end
   end
 end

@@ -1,19 +1,21 @@
 class RecipeCategoriesController < ApplicationController
 
+  before_filter(:init)
+
   def index
-    @title = 'Recipes - Categories'
+    @title = @base_title + 'Categories'
     @categories = RecipeCategory.all
   end
 
   def show
     @category = RecipeCategory.find(params[:id])
     @recipes = @category.recipes.paginate(:page => params[:page])
-    @title = 'Recipes - ' + @category.name
+    @title = @base_title + @category.name
   end
 
   def new
     @category = RecipeCategory.new
-    @title = 'Recipes - New Category'
+    @title = @base_title + 'New Category'
   end
 
   def create
@@ -21,26 +23,34 @@ class RecipeCategoriesController < ApplicationController
     if @category.save
       redirect_to(recipe_categories_path, :flash => { :success => 'Category created!' })
     else
-      @title = 'Recipes - New Category'
+      @title = @base_title + 'New Category'
       render(:new)
     end
   end
 
-  #def edit
-  #  @title = "Edit user"
-  #end
+  def edit
+    @category = RecipeCategory.find(params[:id])
+    @title = @base_title + 'Rename Category'
+  end
 
-  #def update
-  #  if @user.update_attributes(params[:user])
-  #    redirect_to(@user, :flash => { :success => "Profile updated." })
-  #  else
-  #    @title = "Edit user"
-  #    render 'edit'
-  #  end
-  #end
+  def update
+    @category = RecipeCategory.find(params[:id])
+    if @category.update_attributes(params[:recipe_category])
+      redirect_to(@category, :flash => { :success => "Category updated." })
+    else
+      @title = @base_title + 'Rename Category'
+      render 'edit'
+    end
+  end
 
-  #def destroy
-  #  @user.destroy
-  #  redirect_to(users_path, :flash => { :success => "User destroyed" })
-  #end
+  def destroy
+    category = RecipeCategory.find(params[:id])
+    category.destroy
+    redirect_to(recipe_categories_path, :flash => { :success => "Category deleted" })
+  end
+
+  private
+    def init
+      @base_title = 'Recipes - '
+    end
 end

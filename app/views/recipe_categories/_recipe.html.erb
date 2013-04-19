@@ -3,7 +3,7 @@
     <div class="CardHeader">
       <span class="RecipeName"><%= link_to(recipe.name, recipe) %></span>
       <% unless params[:admin].nil? %>
-        | <%= link_to('delete', recipe_category, :method => :delete, :confirm => 'Are you sure?', :title => "Delete #{recipe_category.name}") %>
+        | <%= link_to('delete', recipe, :method => :delete, :confirm => 'Are you sure?', :title => "Delete #{recipe.name}") %>
       <% end %>
     </div>
     <p class="RecipeDescription"><%= recipe.description %></p>
