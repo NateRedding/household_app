@@ -1,6 +1,6 @@
 <h1><%= @category.name %></h1>
 <div class="Actions">
-  <%= link_to('add', new_recipe_path, :class => 'LinkButton Round') %>
+  <%= link_to('add', new_recipe_category_recipe_path(@category), :class => 'LinkButton Round') %>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <%= link_to('rename', edit_recipe_category_path(@category), :class => 'LinkButton Round') %>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

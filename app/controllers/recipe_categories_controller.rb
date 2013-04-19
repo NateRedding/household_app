@@ -39,7 +39,7 @@ class RecipeCategoriesController < ApplicationController
       redirect_to(@category, :flash => { :success => "Category updated." })
     else
       @title = @base_title + 'Rename Category'
-      render 'edit'
+      render(:edit)
     end
   end
 

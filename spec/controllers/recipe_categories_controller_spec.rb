@@ -49,7 +49,6 @@ describe RecipeCategoriesController do
         end
       end
     end
-
   end
 
   describe "GET 'show'" do
@@ -68,13 +67,13 @@ describe RecipeCategoriesController do
     it "should have a link for all of the recipes" do
       get(:show, :id => @category)
       @category.recipes.each do |recipe|
-        response.should have_selector('a', :href => recipe_path(recipe), :content => recipe.name)
+        response.should have_selector('a', :href => recipe_category_recipe_path(@category, recipe), :content => recipe.name)
       end
     end
 
     it "should have a link to create a new recipe" do
       get(:show, :id => @category)
-      response.should have_selector('a', :href => new_recipe_path)
+      response.should have_selector('a', :href => new_recipe_category_recipe_path(@category))
     end
 
     it "should have a link to rename the category" do
@@ -90,12 +89,11 @@ describe RecipeCategoriesController do
     it "should not have a link to delete each of the recipes" do
       get(:show, :id => @category)
       @category.recipes.each do |recipe|
-        response.should_not have_selector('a', :href => recipe_path(recipe), :'data-method' => 'delete')
+        response.should_not have_selector('a', :href => recipe_category_recipe_path(@category, recipe), :'data-method' => 'delete')
       end
     end
 
     describe "admin mode" do
-
       it "should have a link to delete the category" do
         get(:show, :id => @category, :admin => true)
         response.should have_selector('a', :href => recipe_category_path(@category), :'data-method' => 'delete')
@@ -104,11 +102,10 @@ describe RecipeCategoriesController do
       it "should have a link to delete each of the recipes" do
         get(:show, :id => @category, :admin => true)
         @category.recipes.each do |recipe|
-          response.should have_selector('a', :href => recipe_path(recipe), :'data-method' => 'delete')
+          response.should have_selector('a', :href => recipe_category_recipe_path(@category, recipe), :'data-method' => 'delete')
         end
       end
     end
-
   end
 
   describe "GET 'new'" do
@@ -131,7 +128,7 @@ describe RecipeCategoriesController do
   describe "POST 'create'" do
     describe "success" do
       before(:each) do
-        @attr = { name: 'Appetizers' }
+        @attr = { :name => 'Appetizers' }
       end
 
       it "should create a new category" do
@@ -149,7 +146,7 @@ describe RecipeCategoriesController do
 
     describe "failure" do
       before(:each) do
-        @attr = { name: '' }
+        @attr = { :name => '' }
       end
 
       it "should render the 'new' page with error messages" do
@@ -209,7 +206,7 @@ describe RecipeCategoriesController do
 
     describe "failure" do
       before(:each) do
-        @attr = { name: '' }
+        @attr = { :name => '' }
       end
 
       it "should render the 'edit' page with error messages" do
@@ -224,12 +221,29 @@ describe RecipeCategoriesController do
   describe "DELETE 'destroy'" do
     before(:each) do
       @category = RecipeCategory.create(:name => 'Appetizers')
+      recipe1 = @category.recipes.create(:name => 'Nachos', :description => 'Super Cheesy Nachos', :directions => 'Come on, you know how to make nachos!!')
+      recipe1.ingredient_measures.create(:amount => 1, :unit => 'bag', :name => 'tortilla chips')
+      recipe1.ingredient_measures.create(:amount => 3, :unit => 'cups', :name => 'shredded cheese')
+      recipe2 = @category.recipes.create(:name => 'Nachos Without Cheese', :description => 'Itty Bitty Nachos Without Cheese', :directions => 'Come on, you know how to make nachos without cheese!!')
+      recipe2.ingredient_measures.create(:amount => 1, :unit => 'handful', :name => 'tortilla chips')
     end
 
     it "should destroy the category" do
       lambda do
         delete(:destroy, :id => @category)
       end.should change(RecipeCategory, :count).by(-1)
+    end
+
+    it "should destroy its recipes" do
+      lambda do
+        delete(:destroy, :id => @category)
+      end.should change(Recipe, :count).by(-2)
+    end
+
+    it "should destroy the recipes' ingredients" do
+      lambda do
+        delete(:destroy, :id => @category)
+      end.should change(IngredientMeasure, :count).by(-3)
     end
 
     it "should redirect to the category index" do

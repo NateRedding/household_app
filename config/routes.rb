@@ -2,8 +2,10 @@ HouseholdApp::Application.routes.draw do
 
   root :to => 'pages#home'
 
-  resources(:recipe_categories)
-  resources(:recipes)
+  #resources(:recipes, :only => [:create, :destroy])
+  resources(:recipe_categories) do
+    resources(:recipes, :except => :index)
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

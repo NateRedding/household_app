@@ -1,0 +1,21 @@
+<%= form_for([@category, @recipe]) do |f| %>
+    <%=  render 'shared/error_messages', :object => f.object %>
+    <div class="FormField">
+      <%= f.label(:name) %>
+      <br/>
+      <%= f.text_field(:name)%>
+    </div>
+    <div class="FormField">
+      <%= f.label(:description) %>
+      <br/>
+      <%= f.text_area(:description)%>
+    </div>
+    <div class="FormField">
+      <%= f.label(:directions) %>
+      <br/>
+      <%= f.text_area(:directions)%>
+    </div>
+    <div class="FormActions">
+      <%= f.submit("Save") %>
+    </div>
+<% end %>

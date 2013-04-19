@@ -1,9 +1,9 @@
 <li>
   <div class="RecipeMiniCard">
     <div class="CardHeader">
-      <span class="RecipeName"><%= link_to(recipe.name, recipe) %></span>
+      <span class="RecipeName"><%= link_to(recipe.name, [@category, recipe]) %></span>
       <% unless params[:admin].nil? %>
-        | <%= link_to('delete', recipe, :method => :delete, :confirm => 'Are you sure?', :title => "Delete #{recipe.name}") %>
+        | <%= link_to('delete', [@category, recipe], :method => :delete, :confirm => 'Are you sure?', :title => "Delete #{recipe.name}") %>
       <% end %>
     </div>
     <p class="RecipeDescription"><%= recipe.description %></p>

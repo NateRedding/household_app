@@ -1,0 +1,21 @@
+<h1><%= @recipe.name %></h1>
+<div class="Actions">
+  <%= link_to('edit', edit_recipe_category_recipe_path(@category, @recipe), :class => 'LinkButton Round') %>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <%= link_to('delete', [@category, @recipe], :method => :delete, :confirm => 'Are you sure?', :title => "Delete #{@recipe.name}") unless params[:admin].nil?%>
+</div>
+<div class="RecipeCard">
+  <p class="Description">
+    <%= @recipe.description %>
+  </p>
+  <ul class="IngredientList">
+    <%= render(:collection => @recipe.ingredient_measures, :partial => 'recipes/ingredient') %>
+  </ul>
+  <pre class="Directions">
+    <%= @recipe.directions %>
+  </pre>
+</div>
+
+
+
+
